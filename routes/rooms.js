@@ -61,6 +61,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get My Listings (Private Route)
+router.get('/my-listings', authMiddleware, async (req, res) => {
+  try {
+    const rooms = await Room.find({ owner: req.user.id }).sort({ createdAt: -1 });
+    res.json(rooms);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving your room listings', error: error.message });
+  }
+});
+
 // Get single room details
 router.get('/:id', async (req, res) => {
   try {
