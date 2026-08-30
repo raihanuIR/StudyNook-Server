@@ -35,6 +35,20 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Database connection middleware for Serverless invocations
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('Database connection error in request middleware:', err);
+    res.status(500).json({ 
+      message: 'Failed to connect to database. Please check MongoDB Atlas IP access whitelist (0.0.0.0/0).', 
+      error: err.message 
+    });
+  }
+});
+
 // Route Imports
 const authRoutes = require('./routes/auth');
 const roomRoutes = require('./routes/rooms');
