@@ -1,4 +1,12 @@
 const mongoose = require('mongoose');
+const dns = require('node:dns');
+
+// Force Node to use Google/Cloudflare DNS for SRV record resolution
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  console.warn('DNS server override error:', e.message);
+}
 
 const connectDB = async () => {
   try {

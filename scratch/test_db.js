@@ -1,5 +1,12 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const mongoose = require('mongoose');
+const dns = require('node:dns');
+
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  console.warn('DNS server override error:', e.message);
+}
 const User = require('../models/User');
 const Room = require('../models/Room');
 const Booking = require('../models/Booking');
