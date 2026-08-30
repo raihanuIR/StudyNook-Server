@@ -13,17 +13,19 @@ const app = express();
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:5173',
   'http://localhost:5173',
-  'https://studynook-booking.web.app', // Firebase hosting default (optional fallback)
+  'https://studynook-booking.web.app',
   'https://studynook-booking.firebaseapp.com'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, postman)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    if (
+      allowedOrigins.indexOf(origin) !== -1 ||
+      origin.endsWith('.vercel.app') ||
+      (process.env.CLIENT_URL && origin === process.env.CLIENT_URL)
+    ) {
+      return callback(null, true);
     }
     return callback(null, true);
   },
@@ -63,6 +65,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running in development mode on port ${PORT}`);
+  });
+} else {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
